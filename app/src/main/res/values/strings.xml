@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ChronoPulse</string>
+    <string name="app_tagline">Precision Work &amp; Bioscience Protocol Alarms</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="auth_headline">Synchronize Your Work &amp; Lab Rhythm</string>
+    <string name="auth_subtitle">Cloud-synced alarms, focus work reminders, and bioscience incubation &amp; assay timers designed for zero-distraction execution.</string>
+    <string name="nav_alarms">Alarms</string>
+    <string name="nav_bio_lab">Bio-Lab Timer</string>
+    <string name="nav_calculator">Molarity &amp; Prep</string>
+    <string name="nav_insights">Rhythm &amp; Stats</string>
+    <string name="fab_new_alarm">New Work Alarm</string>
+    <string name="empty_alarms_title">No Active Work Alarms</string>
+    <string name="empty_alarms_subtitle">Create a custom work reminder or load a starter bioscience &amp; deep-work schedule below.</string>
+    <string name="seed_starter_schedule">Load Starter Work &amp; Bio Schedule</string>
+    <string name="test_ring_now">Test Ring</string>
+    <string name="notification_permission_banner">Enable notifications so work and bioscience alarms can alert you reliably.</string>
+    <string name="grant_permission">Enable Alerts</string>
+</resources>

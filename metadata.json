@@ -1,0 +1,6 @@
+{
+  "name": "ChronoPulse",
+  "description": "Clean UI work reminder, task scheduler, and bioscience protocol alarm app",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

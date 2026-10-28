@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidWorkAlarm(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+             data.notes is string && data.notes.size() <= 500 &&
+             data.hour is int && data.hour >= 0 && data.hour <= 23 &&
+             data.minute is int && data.minute >= 0 && data.minute <= 59 &&
+             data.enabled is bool &&
+             data.category is string && data.category.size() <= 32 &&
+             data.category in ['DEEP_WORK', 'MEETING', 'BIO_INCUBATION', 'PCR_ASSAY', 'CELL_CULTURE', 'BREAK_CIRCADIAN'] &&
+             data.daysOfWeek is list && data.daysOfWeek.size() <= 7 &&
+             (data.daysOfWeek.size() == 0 || data.daysOfWeek[0] is int) &&
+             data.bioTempCelsius is string && data.bioTempCelsius.size() <= 32 &&
+             data.protocolDurationMin is int && data.protocolDurationMin >= 0 && data.protocolDurationMin <= 1440 &&
+             data.vibrate is bool &&
+             data.snoozeMinutes is int && data.snoozeMinutes >= 1 && data.snoozeMinutes <= 60 &&
+             data.completedCount is int && data.completedCount >= 0 && data.completedCount <= 100000 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /work_alarms/{alarmId} {
+      allow get: if isSignedIn() && isValidId(alarmId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(alarmId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'title', 'notes', 'hour', 'minute', 'enabled',
+                         'category', 'daysOfWeek', 'bioTempCelsius', 'protocolDurationMin',
+                         'vibrate', 'snoozeMinutes', 'completedCount', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'title', 'notes', 'hour', 'minute', 'enabled',
+                         'category', 'daysOfWeek', 'bioTempCelsius', 'protocolDurationMin',
+                         'vibrate', 'snoozeMinutes', 'completedCount', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidWorkAlarm(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(alarmId) &&
+                       isValidWorkAlarm(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'title', 'notes', 'hour', 'minute', 'enabled',
+                         'category', 'daysOfWeek', 'bioTempCelsius', 'protocolDurationMin',
+                         'vibrate', 'snoozeMinutes', 'completedCount', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(alarmId) && existing().userId == request.auth.uid;
+    }
+  }
+}

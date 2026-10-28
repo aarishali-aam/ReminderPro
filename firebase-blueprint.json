@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "WorkAlarm": {
+      "title": "WorkAlarm",
+      "description": "Represents a scheduled work reminder or bioscience laboratory protocol alarm owned by an authenticated user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The Firebase Auth UID of the owner."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short title of the work alarm or bioscience step (1-120 chars)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Detailed task checklist, reagent concentrations, or work context (0-500 chars)."
+        },
+        "hour": {
+          "type": "integer",
+          "description": "24-hour clock hour (0-23)."
+        },
+        "minute": {
+          "type": "integer",
+          "description": "Minute of the hour (0-59)."
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the alarm is currently active."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "DEEP_WORK",
+            "MEETING",
+            "BIO_INCUBATION",
+            "PCR_ASSAY",
+            "CELL_CULTURE",
+            "BREAK_CIRCADIAN"
+          ],
+          "description": "Work or bioscience category tag."
+        },
+        "daysOfWeek": {
+          "type": "array",
+          "description": "List of recurring weekday numbers (1=Mon .. 7=Sun), empty for one-shot."
+        },
+        "bioTempCelsius": {
+          "type": "string",
+          "description": "Target temperature or lab condition note (e.g., '37.0°C / 5% CO2'), empty if standard work."
+        },
+        "protocolDurationMin": {
+          "type": "integer",
+          "description": "Duration of the associated focus or lab protocol timer in minutes (0-1440)."
+        },
+        "vibrate": {
+          "type": "boolean",
+          "description": "Whether haptic vibration is enabled when the alarm triggers."
+        },
+        "snoozeMinutes": {
+          "type": "integer",
+          "description": "Snooze interval in minutes (1-60)."
+        },
+        "completedCount": {
+          "type": "integer",
+          "description": "Number of times this work session or protocol has been completed."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp (clients must submit FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp (clients must submit FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "title",
+        "notes",
+        "hour",
+        "minute",
+        "enabled",
+        "category",
+        "daysOfWeek",
+        "bioTempCelsius",
+        "protocolDurationMin",
+        "vibrate",
+        "snoozeMinutes",
+        "completedCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/work_alarms/{alarmId}": {
+      "schema": {
+        "$ref": "#/entities/WorkAlarm"
+      },
+      "description": "Root collection of user-scoped work alarms and bioscience protocol reminders."
+    }
+  }
+}
